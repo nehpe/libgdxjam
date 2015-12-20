@@ -7,6 +7,9 @@ import com.nehpe.spaceminer.SpaceMinerGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.title = "SpaceMinerGame";
+		config.width = SpaceMinerGame.WIDTH * SpaceMinerGame.SCALE;
+		config.height = SpaceMinerGame.HEIGHT * SpaceMinerGame.SCALE;
 		new LwjglApplication(new SpaceMinerGame(), config);
 	}
 }
