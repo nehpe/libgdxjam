@@ -18,8 +18,8 @@ public class TitleScreen extends Screen {
 	public TitleScreen(SpaceMinerGame game) {
 		super(game);
 		
-		titleFont = new BitmapFont(Gdx.files.external("Code/libgdxjam/spaceminer/core/assets/fonts/TitleFont.fnt"));
-		normalFont = new BitmapFont(Gdx.files.external("Code/libgdxjam/spaceminer/core/assets/fonts/PressStart.fnt"));
+		titleFont = new BitmapFont(Gdx.files.internal("fonts/TitleFont.fnt"));
+		normalFont = new BitmapFont(Gdx.files.internal("fonts/PressStart.fnt"));
 		batch = new SpriteBatch();
 		layout = new GlyphLayout();
 		layout.setText(titleFont, "Space Miner");

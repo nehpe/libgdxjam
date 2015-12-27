@@ -28,8 +28,8 @@ public class LogoScreen extends Screen {
 		batch = new SpriteBatch();
 		bColor = batch.getColor();
 		
-		logo = new Texture(Gdx.files.external("Code/libgdxjam/spaceminer/core/assets/logos/nehpe.png"));
-		logoBlock = new Texture(Gdx.files.external("Code/libgdxjam/spaceminer/core/assets/logos/nehpe_block.png"));
+		logo = new Texture(Gdx.files.internal("logos/nehpe.png"));
+		logoBlock = new Texture(Gdx.files.internal("logos/nehpe_block.png"));
 		
 		logoScale = 2;
 		logoPositioning = new Rectangle(
@@ -74,6 +74,11 @@ public class LogoScreen extends Screen {
 		if (Gdx.input.isKeyPressed(Keys.SPACE) || Gdx.input.isKeyPressed(Keys.ENTER)) {
 			this.nextScreen();
 		}
+		
+		if (Gdx.input.isKeyPressed(Keys.R)) {
+			reverse = false;
+			opacity = 0.0f;
+		}
 	}
 
 	@Override
@@ -97,6 +102,7 @@ public class LogoScreen extends Screen {
 		
 		if (opacity < 0.0f) {
 			opacity = 0.0f;
+//			reverse = false;
 			this.nextScreen();
 		}
 	}
