@@ -51,7 +51,7 @@ public class HealthBar {
 	
 	public void updateHealth(int health) {
 		this.health = health;
-		this.width = (int) (fullbarWidth * (float)(health/100f));// * (health/100);
+		this.width = (int) (fullbarWidth * (float)(health/100f));
 	}
 
 	public void tick() {

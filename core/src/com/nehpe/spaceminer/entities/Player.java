@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.nehpe.spaceminer.SpaceMinerGame;
+import com.nehpe.spaceminer.screens.PlayScreen;
 import com.nehpe.utils.Animation;
 
 public class Player extends Entity {
@@ -16,18 +18,18 @@ public class Player extends Entity {
 	Texture texture;
 	Animation currentAnimation;
 	HashMap<String, Animation> animations;
-	
+
 	TextureRegion[][] sprites;
 	public float speed = 60f;
-	
+
 	public Player() {
-		position = new Vector2(8*16*SpaceMinerGame.SCALE, 7*16*SpaceMinerGame.SCALE);
+		position = new Vector2(8 * 16 * SpaceMinerGame.SCALE, 7 * 16 * SpaceMinerGame.SCALE);
 		size = new Vector2(16 * SpaceMinerGame.SCALE, 16 * SpaceMinerGame.SCALE);
 		texture = new Texture(Gdx.files.internal("sheets/char3.png"));
 		sprites = TextureRegion.split(texture, 16, 16);
 		this.loadAnimations();
 	}
-	
+
 	private void loadAnimations() {
 		// Set up all the player animations
 		currentAnimation = new Animation(16, 16, sprites[0]);
@@ -48,7 +50,7 @@ public class Player extends Entity {
 		currentAnimation.tick();
 	}
 
-	public void move(Vector2 currentMovement) {
+	public void move(Vector2 currentMovement, PlayScreen playScreen) {
 		if (currentMovement == Vector2.Zero) {
 			System.out.println("No Movement");
 			return;
@@ -58,5 +60,20 @@ public class Player extends Entity {
 		normalizedMovement.y *= (speed * SpaceMinerGame.SCALE) * Gdx.graphics.getDeltaTime();
 		position.x += normalizedMovement.x;
 		position.y += normalizedMovement.y;
+		this.moveCamera(normalizedMovement, playScreen);
 	}
+
+	private void moveCamera(Vector2 normalizedMovement, PlayScreen playScreen) {
+		Vector3 screenPos = playScreen.camera.project(new Vector3(this.position.x, this.position.y, 0));
+//		System.out.println(screenPos);
+		if (screenPos.x > 650 || screenPos.x < 250) {
+			playScreen.camera.position.x += normalizedMovement.x;
+		}
+		
+		if (screenPos.y > 450 || screenPos.y < 250) {
+			playScreen.camera.position.y += normalizedMovement.y;
+		}
+		
+	}
+
 }
