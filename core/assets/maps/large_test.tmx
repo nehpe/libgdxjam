@@ -8,4 +8,9 @@
    eJzt0DkKwDAQQ9HJQlZCcv/TRoXT2cHdqPiFEJgBizdExKhMHf33Vrtp3ff+MSu7siirYW9l36Gchv3tc9hSa/zwww8//PK34IefW+OHH3744Ze/BT/83Bo//PDDD7/8LS2/S7lN8ygvD3c/5w==
   </data>
  </layer>
+ <layer name="Collidables" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztzrEJwDAQxdBvHEMaG+8/bW4HNRfQA/UaSWbTnmqlrzf+Ef4x/jH+Mf4x/jH+Mf4x/jH+Mf4x/jH+Mf4x/jH+Mf4x/jF/+NvVadqtPkfYBJc=
+  </data>
+ </layer>
 </map>

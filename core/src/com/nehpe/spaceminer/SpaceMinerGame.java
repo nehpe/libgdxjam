@@ -8,10 +8,6 @@ import com.nehpe.spaceminer.screens.Screen;
 import com.nehpe.spaceminer.screens.TitleScreen;
 
 public class SpaceMinerGame extends ApplicationAdapter {
-	public static final int WIDTH = 256;
-	public static final int HEIGHT = 240;
-	public static final int SCALE = 4;
-	
 	private Screen currentScreen;
 	
 	@Override

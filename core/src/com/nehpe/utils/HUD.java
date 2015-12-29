@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import com.nehpe.spaceminer.SpaceMinerGame;
 import com.nehpe.utils.hud.HealthBar;
 
@@ -18,7 +19,10 @@ public class HUD {
 	SpriteBatch batch;
 	int savings = 0;
 	private GlyphLayout scoreLayout;
+	private GlyphLayout dropShadowLayout;
 	private Vector2 scorePosition;
+	private Vector2 dropShadowPosition;
+	
 	HealthBar bar;
 
 
@@ -30,19 +34,21 @@ public class HUD {
 		fonts.put("NormalFont", new BitmapFont(Gdx.files.internal("fonts/PressStart.fnt")));
 
 		// Set up score layout
-		scoreLayout = new GlyphLayout(fonts.get("NormalFont"), this.getScore());
+		scoreLayout = new GlyphLayout(fonts.get("NormalFont"), this.getScore(), Color.GREEN, this.getScore().length(), Align.left, false);
+		dropShadowLayout = new GlyphLayout(fonts.get("NormalFont"), this.getScore(), Color.BLACK, this.getScore().length(), Align.left, false);
+		
 		scorePosition = new Vector2((Gdx.graphics.getWidth() / 2) - scoreLayout.width / 2,
+				scoreLayout.height+2);
+		dropShadowPosition = new Vector2(((Gdx.graphics.getWidth() / 2) - scoreLayout.width / 2)+2,
 				scoreLayout.height);
 		
-		bar = new HealthBar(new Vector2(0, Gdx.graphics.getHeight()), SpaceMinerGame.SCALE);
+		bar = new HealthBar(new Vector2(0, Gdx.graphics.getHeight()));
 	}
 
 	public void draw() {
 		batch.begin();
 		this.drawScore();
-		
 		this.drawHealth();
-
 		batch.end();
 	}
 
@@ -51,6 +57,7 @@ public class HUD {
 	}
 
 	private void drawScore() {
+		fonts.get("NormalFont").draw(batch, dropShadowLayout, dropShadowPosition.x, dropShadowPosition.y);
 		fonts.get("NormalFont").draw(batch, scoreLayout, scorePosition.x, scorePosition.y);
 	}
 

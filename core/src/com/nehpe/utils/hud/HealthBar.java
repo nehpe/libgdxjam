@@ -16,12 +16,12 @@ public class HealthBar {
 	int fullbarWidth;
 	int width = 0;
 	
-	public HealthBar(Vector2 position, int scale) {
+	public HealthBar(Vector2 position) {
 		healthSheet = new Texture(Gdx.files.internal("hud/healthsheet.png"));
 		healthTiles = TextureRegion.split(healthSheet, 8, 8);
 		
 		this.position = position;
-		this.scale = scale;
+		this.scale = 4;
 		
 		fullbarWidth = 8*this.scale * 4;
 		width = fullbarWidth;

@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.nehpe.spaceminer.SpaceMinerGame;
 
 public class Enemy extends Entity {
 	
@@ -15,10 +14,10 @@ public class Enemy extends Entity {
 	TextureRegion[][] sprites;
 	
 	public Enemy() {
-		position = new Vector2(2*16*SpaceMinerGame.SCALE, 2*16*SpaceMinerGame.SCALE);
+		position = new Vector2(2*16, 2*16);
 		texture = new Texture(Gdx.files.internal("sheets/enemy.png"));
 		sprites = TextureRegion.split(texture, 16, 16);
-		size = new Vector2(16 * SpaceMinerGame.SCALE, 16 * SpaceMinerGame.SCALE);		
+		size = new Vector2(16, 16);		
 	}
 
 	@Override

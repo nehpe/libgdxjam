@@ -14,8 +14,7 @@ public class Animation {
 	float timer = 0f;
 	float flip_time = 5f;
 	private final static float DEFAULT_SPEED = 20f;
-	
-	
+
 	public Animation(int width, int height, TextureRegion[] Frames, float speed) {
 		this.dimensions = new Vector2(width, height);
 		this.frames = Frames;
@@ -26,26 +25,30 @@ public class Animation {
 	public Animation(int width, int height, TextureRegion[] Frames) {
 		this(width, height, Frames, DEFAULT_SPEED);
 	}
-	
+
 	public Animation(int width, int height, Texture Sheet) {
 		this(width, height, TextureRegion.split(Sheet, width, height)[0]);
 	}
-	
+
 	public void tick() {
 		timer += speed * Gdx.graphics.getDeltaTime();
 		if (timer > flip_time) {
 			timer = 0f;
 			currentFrame++;
-			if (currentFrame+1 > maxFrames) {
+			if (currentFrame + 1 > maxFrames) {
 				currentFrame = 0;
 			}
 		}
 	}
-	
+
 	public TextureRegion getFrame() {
 		return this.frames[currentFrame];
 	}
-	
+
+	public TextureRegion getFrame(int frameNumber) {
+		return this.frames[frameNumber];
+	}
+
 	public void reset() {
 		timer = 0f;
 		currentFrame = 0;
