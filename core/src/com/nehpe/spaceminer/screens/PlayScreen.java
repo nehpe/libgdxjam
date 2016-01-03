@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.nehpe.spaceminer.SpaceMinerGame;
 import com.nehpe.spaceminer.entities.Enemy;
 import com.nehpe.spaceminer.entities.Player;
+import com.nehpe.spaceminer.entities.Projectile;
 import com.nehpe.spaceminer.entities.World;
 import com.nehpe.spaceminer.physics.Collidable;
 import com.nehpe.utils.HUD;
@@ -57,11 +58,13 @@ public class PlayScreen extends Screen {
 
 		batch.begin();
 
-		world.draw(batch);
+		world.drawBackground(batch);
 
 		enemy.draw(batch);
 
 		player.draw(batch);
+		
+		world.drawForeground(batch);
 
 		batch.end();
 
@@ -73,6 +76,7 @@ public class PlayScreen extends Screen {
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			Gdx.app.exit();
 		}
+		
 		currentMovement = new Vector2(0, 0);
 		if (Gdx.input.isKeyPressed(Keys.W)) {
 			currentMovement.y = 1;
@@ -87,25 +91,56 @@ public class PlayScreen extends Screen {
 			currentMovement.x = 1;
 		}
 		
+		Projectile projectile = null;
 		if (Gdx.input.isKeyJustPressed(Keys.UP)) {
-			player.attackUp();
+			projectile = player.attackUp();
 		} else if (Gdx.input.isKeyJustPressed(Keys.DOWN)) {
-			player.attackDown();
+			projectile = player.attackDown();
 		} else if (Gdx.input.isKeyJustPressed(Keys.LEFT)) {
-			player.attackLeft();
+			projectile = player.attackLeft();
 		} else if (Gdx.input.isKeyJustPressed(Keys.RIGHT)) {
-			player.attackRight();
+			projectile = player.attackRight();
 		}
 		
-		player.move(currentMovement, this);
-		Collidable collision = world.checkCollisions(player.getPosition());
-		System.out.println(collision);
+		if (projectile != null) {
+			world.addProjectile(projectile);
+		}
+
+		Vector2 proposedMovement = player.proposeMove(currentMovement);
+		Collidable collision = world.checkPlayerCollisions(proposedMovement);
+		if (collision != null) {
+			// Check if there is a collision with our X movement
+			Vector2 playerPosition = player.getPosition();
+			Vector2 proposedDirectionalMovement = new Vector2(proposedMovement.x, playerPosition.y);
+			collision = world.checkPlayerCollisions(proposedDirectionalMovement);
+			if (collision != null) {
+				// There is! Is it also along Y?
+				proposedDirectionalMovement = new Vector2(playerPosition.x, proposedMovement.y);
+				collision = world.checkPlayerCollisions(proposedDirectionalMovement);
+				if (collision != null) { 
+					// Our movement causes collisions on both axes, so we can't do the proposed move
+					proposedMovement = playerPosition;
+				} else {
+					// Our movement is only colliding on the X axis, so we can still move Y
+					// Reset our X
+					proposedMovement.x = playerPosition.x;
+				}
+				
+			} else {
+				// By default, our collision must be on the Y axis.
+				// Reset the Y and proceed
+				proposedMovement.y = playerPosition.y;
+			}
+			proposedMovement = player.doCollision(proposedMovement, collision);
+		}
 		
+		player.move(proposedMovement, this);
 	}
 
 	@Override
 	public void tick() {
 		player.tick();
+		world.tick();
 		hud.tick();
 	}
 

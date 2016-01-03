@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.nehpe.spaceminer.physics.Collidable;
+import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.spaceminer.screens.PlayScreen;
+import com.nehpe.spaceminer.weapons.Pistol;
 import com.nehpe.spaceminer.weapons.Weapon;
 import com.nehpe.utils.Animation;
 import com.nehpe.utils.GameVars;
@@ -32,6 +35,8 @@ public class Player extends Entity {
 		size = new Vector2(16, 16);
 		texture = new Texture(Gdx.files.internal("sheets/char3.png"));
 		sprites = TextureRegion.split(texture, 16, 16);
+		
+		currentWeapon = new Pistol();
 
 		this.loadAnimations();
 	}
@@ -41,9 +46,9 @@ public class Player extends Entity {
 		currentAnimation = new Animation(16, 16, sprites[0]);
 		animations = new HashMap<Direction, Animation>();
 		animations.put(Direction.DOWN, new Animation(16, 16, sprites[0]));
-		animations.put(Direction.LEFT, new Animation(16, 16, sprites[1]));
+		animations.put(Direction.RIGHT, new Animation(16, 16, sprites[1]));
 		animations.put(Direction.UP, new Animation(16, 16, sprites[2]));
-		animations.put(Direction.RIGHT, new Animation(16, 16, sprites[3]));
+		animations.put(Direction.LEFT, new Animation(16, 16, sprites[3]));
 	}
 
 	@Override
@@ -53,6 +58,8 @@ public class Player extends Entity {
 			currentAnimation.reset();
 		}
 		batch.draw(currentAnimation.getFrame(), position.x, position.y, size.x, size.y);
+		
+		if (currentWeapon != null) currentWeapon.draw(batch, this.position, currentDirection);
 	}
 
 	@Override
@@ -61,46 +68,33 @@ public class Player extends Entity {
 			currentAnimation.tick();
 		}
 	}
+	
+	public void move(Vector2 newPosition, PlayScreen playScreen) {
+		Vector2 movement = new Vector2(
+				newPosition.x - position.x,
+				newPosition.y - position.y
+				);
+		position.x = newPosition.x;
+		position.y = newPosition.y;
+		
+		this.moveCamera(movement, playScreen);
+	}
 
-	public void move(Vector2 currentMovement, PlayScreen playScreen) {
+	public Vector2 proposeMove(Vector2 currentMovement) {
 		if (currentMovement.x == 0 && currentMovement.y == 0) {
 			moving = false;
-			System.out.println("No Movement");
-			return;
+			return position;
 		}
 		moving = true;
 
-		if (currentMovement.x > 0) {
-			if (currentDirection != Direction.LEFT) {
-				currentDirection = Direction.LEFT;
-				this.resetAnimation();
-			}
-
-		} else if (currentMovement.x < 0) {
-			if (currentDirection != Direction.RIGHT) {
-				currentDirection = Direction.RIGHT;
-				this.resetAnimation();
-			}
-
-		} else if (currentMovement.y > 0) {
-			if (currentDirection != Direction.UP) {
-				currentDirection = Direction.UP;
-				this.resetAnimation();
-			}
-		} else if (currentMovement.y < 0) {
-			if (currentDirection != Direction.DOWN) {
-				currentDirection = Direction.DOWN;
-				this.resetAnimation();
-			}
-		}
+		Vector2 proposedPosition = new Vector2(position.x, position.y);
 
 		Vector2 normalizedMovement = currentMovement;
 		normalizedMovement.x *= (speed) * Gdx.graphics.getDeltaTime();
 		normalizedMovement.y *= (speed) * Gdx.graphics.getDeltaTime();
-		position.x += normalizedMovement.x;
-		position.y += normalizedMovement.y;
-
-		this.moveCamera(normalizedMovement, playScreen);
+		proposedPosition.x += normalizedMovement.x;
+		proposedPosition.y += normalizedMovement.y;
+		return proposedPosition;
 	}
 
 	private void resetAnimation() {
@@ -117,26 +111,56 @@ public class Player extends Entity {
 		if (screenPos.y > 450 || screenPos.y < 250) {
 			playScreen.camera.position.y += normalizedMovement.y;
 		}
-
 	}
 
 	public Vector2 getPosition() {
 		return this.position;
 	}
-
-	public void attackUp() {
-
+	
+	public Vector2 doCollision(Vector2 proposedMovement, Collidable collidable) {
+		return proposedMovement;
+//		if (collidable instanceof Wall) {
+			// Player collides with wall
+//		}
 	}
 
-	public void attackDown() {
-
+	public Projectile attackUp() {
+		if (currentDirection != Direction.UP) {
+			currentDirection = Direction.UP;
+			this.resetAnimation();
+		}
+		if (currentWeapon == null)
+			return null;
+		return currentWeapon.fire(Direction.UP, this.position);
 	}
 
-	public void attackRight() {
-
+	public Projectile attackDown() {
+		if (currentDirection != Direction.DOWN) {
+			currentDirection = Direction.DOWN;
+			this.resetAnimation();
+		}
+		if (currentWeapon == null)
+			return null;
+		return currentWeapon.fire(Direction.DOWN, this.position);
 	}
 
-	public void attackLeft() {
+	public Projectile attackRight() {
+		if (currentDirection != Direction.RIGHT) {
+			currentDirection = Direction.RIGHT;
+			this.resetAnimation();
+		}
+		if (currentWeapon == null)
+			return null;
+		return currentWeapon.fire(Direction.RIGHT, this.position);
+	}
 
+	public Projectile attackLeft() {
+		if (currentDirection != Direction.LEFT) {
+			currentDirection = Direction.LEFT;
+			this.resetAnimation();
+		}
+		if (currentWeapon == null)
+			return null;
+		return currentWeapon.fire(Direction.LEFT, this.position);
 	}
 }
