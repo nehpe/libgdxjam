@@ -34,6 +34,10 @@ public class World {
 	public void removeProjectile(Projectile projectile) {
 		projectiles.remove(projectile);
 	}
+	
+	public void removePickup(Pickup pickup) {
+		pickups.remove(pickup);
+	}
 
 	public void drawBackground(SpriteBatch batch) {
 		level.draw(batch);
@@ -54,7 +58,6 @@ public class World {
 		for (Pickup p : pickups) {
 			p.tick();
 		}
-		
 //		System.out.println("Projectiles: "+projectiles.size());
 		for (Projectile p : projectiles) {
 			p.tick();

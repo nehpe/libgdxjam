@@ -32,4 +32,9 @@ public class Present extends Pickup {
 				);
 	}
 
+	@Override
+	public int getScore() {
+		return 100;
+	}
+
 }

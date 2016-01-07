@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.nehpe.spaceminer.physics.Collidable;
 import com.nehpe.spaceminer.physics.Wall;
+import com.nehpe.spaceminer.pickups.Pickup;
 import com.nehpe.spaceminer.screens.PlayScreen;
 import com.nehpe.spaceminer.weapons.Pistol;
 import com.nehpe.spaceminer.weapons.Weapon;
@@ -26,6 +27,7 @@ public class Player extends Entity {
 	boolean moving = false;
 	Direction currentDirection = Direction.DOWN;
 	Weapon currentWeapon = null;
+	int score = 0;
 
 	TextureRegion[][] sprites;
 	public float speed = 60f;
@@ -117,11 +119,25 @@ public class Player extends Entity {
 		return this.position;
 	}
 	
-	public Vector2 doCollision(Vector2 proposedMovement, Collidable collidable) {
+	public Vector2 doCollision(Vector2 proposedMovement, Collidable collidable, World world) {
+		if (collidable instanceof Pickup) {
+			doPickup((Pickup)collidable, world);
+		}
 		return proposedMovement;
-//		if (collidable instanceof Wall) {
-			// Player collides with wall
-//		}
+	}
+	
+	public void doPickup(Pickup collidingPickup, World world) {
+		int score = collidingPickup.getScore();
+		this.addScore(score);
+		world.removePickup(collidingPickup);
+	}
+	
+	public void addScore(int score) {
+		this.score += score;
+	}
+	
+	public int getScore() {
+		return this.score;
 	}
 
 	public Projectile attackUp() {

@@ -3,6 +3,7 @@ package com.nehpe.spaceminer.weapons;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,12 +14,14 @@ import com.nehpe.utils.GameVars;
 
 public class Pistol extends Weapon {
 	Texture image;
+	Sound sound;
 	TextureRegion[][] frames;
 	HashMap<Direction, Vector2> posOffsets;
 	
 	public Pistol() {
 		image = new Texture(Gdx.files.internal("weapons/Pistol.png"));
 		frames = TextureRegion.split(image, 16, 16);
+		sound = Gdx.audio.newSound(Gdx.files.internal("sounds/shot.mp3"));
 		posOffsets = new HashMap<Direction, Vector2>();
 		posOffsets.put(Direction.DOWN, new Vector2(0,0));
 		posOffsets.put(Direction.LEFT, new Vector2(6,4));
@@ -75,7 +78,7 @@ public class Pistol extends Weapon {
 		
 		fixedPosition.x += positionOffset.x;
 		fixedPosition.y += positionOffset.y;
-		
+		sound.play(1.0f);
 		return new Projectile(fixedPosition, movement);
 	}
 }

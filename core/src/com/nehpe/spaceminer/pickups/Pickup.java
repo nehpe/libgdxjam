@@ -9,6 +9,7 @@ public abstract class Pickup extends Collidable {
 	public abstract void tick();
 	
 	public abstract Vector2 getTilePosition();
+	public abstract int getScore();
 	
 	
 }

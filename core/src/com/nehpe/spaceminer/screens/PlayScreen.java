@@ -11,6 +11,7 @@ import com.nehpe.spaceminer.entities.Player;
 import com.nehpe.spaceminer.entities.Projectile;
 import com.nehpe.spaceminer.entities.World;
 import com.nehpe.spaceminer.physics.Collidable;
+import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.utils.HUD;
 
 public class PlayScreen extends Screen {
@@ -113,11 +114,11 @@ public class PlayScreen extends Screen {
 			Vector2 playerPosition = player.getPosition();
 			Vector2 proposedDirectionalMovement = new Vector2(proposedMovement.x, playerPosition.y);
 			collision = world.checkPlayerCollisions(proposedDirectionalMovement);
-			if (collision != null) {
+			if (collision != null && collision instanceof Wall) {
 				// There is! Is it also along Y?
 				proposedDirectionalMovement = new Vector2(playerPosition.x, proposedMovement.y);
 				collision = world.checkPlayerCollisions(proposedDirectionalMovement);
-				if (collision != null) { 
+				if (collision != null && collision instanceof Wall) { 
 					// Our movement causes collisions on both axes, so we can't do the proposed move
 					proposedMovement = playerPosition;
 				} else {
@@ -126,12 +127,12 @@ public class PlayScreen extends Screen {
 					proposedMovement.x = playerPosition.x;
 				}
 				
-			} else {
+			} else if (collision instanceof Wall) {
 				// By default, our collision must be on the Y axis.
 				// Reset the Y and proceed
 				proposedMovement.y = playerPosition.y;
 			}
-			proposedMovement = player.doCollision(proposedMovement, collision);
+			proposedMovement = player.doCollision(proposedMovement, collision, world);
 		}
 		
 		player.move(proposedMovement, this);
@@ -141,7 +142,7 @@ public class PlayScreen extends Screen {
 	public void tick() {
 		player.tick();
 		world.tick();
-		hud.tick();
+		hud.tick(player);
 	}
 
 }

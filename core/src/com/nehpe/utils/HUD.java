@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import com.nehpe.spaceminer.SpaceMinerGame;
+import com.nehpe.spaceminer.entities.Player;
 import com.nehpe.utils.hud.HealthBar;
 
 public class HUD {
@@ -34,13 +35,7 @@ public class HUD {
 		fonts.put("NormalFont", new BitmapFont(Gdx.files.internal("fonts/PressStart.fnt")));
 
 		// Set up score layout
-		scoreLayout = new GlyphLayout(fonts.get("NormalFont"), this.getScore(), Color.GREEN, this.getScore().length(), Align.left, false);
-		dropShadowLayout = new GlyphLayout(fonts.get("NormalFont"), this.getScore(), Color.BLACK, this.getScore().length(), Align.left, false);
-		
-		scorePosition = new Vector2((Gdx.graphics.getWidth() / 2) - scoreLayout.width / 2,
-				scoreLayout.height+2);
-		dropShadowPosition = new Vector2(((Gdx.graphics.getWidth() / 2) - scoreLayout.width / 2)+2,
-				scoreLayout.height);
+		this.redoScoreLayout();
 		
 		bar = new HealthBar(new Vector2(0, Gdx.graphics.getHeight()));
 	}
@@ -65,6 +60,20 @@ public class HUD {
 		return "$" + String.format("%07d", savings);
 	}
 
-	public void tick() {
+	public void tick(Player player) {
+		if (player.getScore() != savings) {
+			savings = player.getScore();
+			this.redoScoreLayout();
+		}
+	}
+
+	private void redoScoreLayout() {
+		scoreLayout = new GlyphLayout(fonts.get("NormalFont"), this.getScore(), Color.GREEN, this.getScore().length(), Align.left, false);
+		dropShadowLayout = new GlyphLayout(fonts.get("NormalFont"), this.getScore(), Color.BLACK, this.getScore().length(), Align.left, false);
+		
+		scorePosition = new Vector2((Gdx.graphics.getWidth() / 2) - scoreLayout.width / 2,
+				scoreLayout.height+2);
+		dropShadowPosition = new Vector2(((Gdx.graphics.getWidth() / 2) - scoreLayout.width / 2)+2,
+				scoreLayout.height);		
 	}
 }
