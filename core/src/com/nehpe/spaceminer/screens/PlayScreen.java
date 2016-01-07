@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.nehpe.spaceminer.SpaceMinerGame;
+import com.nehpe.spaceminer.entities.BlobEnemy;
 import com.nehpe.spaceminer.entities.Enemy;
 import com.nehpe.spaceminer.entities.Player;
 import com.nehpe.spaceminer.entities.Projectile;
@@ -21,6 +22,7 @@ public class PlayScreen extends Screen {
 	public static int lowDisplayHeight;
 	
 	Enemy enemy;
+	BlobEnemy blob;
 	Player player;
 	SpriteBatch batch;
 	public OrthographicCamera camera;
@@ -31,6 +33,7 @@ public class PlayScreen extends Screen {
 	public PlayScreen(SpaceMinerGame game) {
 		super(game);
 		enemy = new Enemy();
+		blob = new BlobEnemy(new Vector2(16*4, 16*4));
 		player = new Player();
 		batch = new SpriteBatch();
 
@@ -39,7 +42,6 @@ public class PlayScreen extends Screen {
 		
 		lowDisplayWidth  = (int)(displayWidth/(displayHeight/(displayHeight/Math.floor(displayHeight/160))));
 		lowDisplayHeight = (int)(displayHeight/Math.floor(displayHeight/160));
-		
 
 		camera = new OrthographicCamera(lowDisplayWidth, lowDisplayHeight);
 		camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
@@ -62,6 +64,8 @@ public class PlayScreen extends Screen {
 		world.drawBackground(batch);
 
 		enemy.draw(batch);
+		
+		blob.draw(batch);
 
 		player.draw(batch);
 		
@@ -142,6 +146,7 @@ public class PlayScreen extends Screen {
 	public void tick() {
 		player.tick();
 		world.tick();
+		blob.tick();
 		hud.tick(player);
 	}
 
