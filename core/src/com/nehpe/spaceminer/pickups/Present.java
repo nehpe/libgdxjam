@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public class Present extends Pickup {
-	private Vector2 position;
 	private Texture image;
 	
 	public Present(Vector2 position) {
@@ -25,16 +24,8 @@ public class Present extends Pickup {
 	}
 
 	@Override
-	public Vector2 getTilePosition() {
-		return new Vector2(
-				(float)Math.floor(this.position.x/16),
-				(float)Math.floor(this.position.y/16)
-				);
-	}
-
-	@Override
 	public int getScore() {
-		return 100;
+		return 25;
 	}
 
 }

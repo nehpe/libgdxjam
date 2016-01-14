@@ -1,29 +1,34 @@
 package com.nehpe.spaceminer.entities;
 
 import java.util.ArrayList;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.nehpe.spaceminer.entities.ai.AIInformation;
 import com.nehpe.spaceminer.levels.Level;
+import com.nehpe.spaceminer.objects.BaseObject;
 import com.nehpe.spaceminer.physics.Collidable;
 import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.spaceminer.pickups.Pickup;
-import com.nehpe.spaceminer.pickups.Present;
 
 public class World {
 	private Level level;
 	ArrayList<Pickup> pickups;
 	ArrayList<Projectile> projectiles;
+	ArrayList<BaseEnemy> enemies;
+	ArrayList<BaseObject> objects;
 	int[][] collidables;
 	public World() {
 		level = new Level();
 		pickups = new ArrayList<Pickup>();
 		projectiles = new ArrayList<Projectile>();
+		enemies = new ArrayList<BaseEnemy>();
+		objects = new ArrayList<BaseObject>();
 		this.initial_setup();
 	}
 	
 	private void initial_setup() {
-		pickups.add(new Present(new Vector2(16*5, 16*5)));
+		
 		collidables = level.getCollidables();
 	}
 	
@@ -38,6 +43,22 @@ public class World {
 	public void removePickup(Pickup pickup) {
 		pickups.remove(pickup);
 	}
+	
+	public void addEnemy(BaseEnemy enemy) {
+		enemies.add(enemy);
+	}
+	
+	public void removeEnemy(BaseEnemy enemy) {
+		enemies.remove(enemy);
+	}
+	
+	public void addObject(BaseObject object) {
+		objects.add(object);
+	}
+	
+	public void removeObject(BaseObject object) {
+		objects.remove(object);
+	}
 
 	public void drawBackground(SpriteBatch batch) {
 		level.draw(batch);
@@ -46,30 +67,101 @@ public class World {
 		for (Pickup p : pickups) {
 			p.draw(batch);
 		}
+		
+		// Draw objects
+		for (BaseObject o : objects) {
+			o.draw(batch);
+		}
 	}
 	
 	public void drawForeground(SpriteBatch batch) {
 		for (Projectile p : projectiles) {
 			p.draw(batch);
 		}
+		for (BaseEnemy e : enemies) {
+			e.draw(batch);
+		}
 	}
 	
-	public void tick() {
+	public void tick(Player player) {
 		for (Pickup p : pickups) {
 			p.tick();
 		}
-//		System.out.println("Projectiles: "+projectiles.size());
 		for (Projectile p : projectiles) {
 			p.tick();
 		}
+		AIInformation info = this.gatherAIInformation();
+		for (BaseEnemy e : enemies) {
+			e.tick(info);
+		}
+		for (BaseObject o : objects) {
+			o.tick();
+		}
 		
-		this.checkNonPlayerCollisions();
+		this.checkNonPlayerCollisions(player);
 	}
 	
-	public void checkNonPlayerCollisions() {
+	private AIInformation gatherAIInformation() {
+		AIInformation info = new AIInformation();
+		info.setObjects(objects);
+		info.setWorld(this);
+		return info;
+	}
+
+	public void checkNonPlayerCollisions(Player player) {
 		Vector2 tilePosition = new Vector2(0,0);
 		Vector2 projectilePosition = new Vector2(0,0);
 		Projectile projectileToRemove = null;
+		
+		ArrayList<Pickup> additionalPickups = null;
+		// Check if dead
+		BaseEnemy enemyToRemove = null;
+		for (BaseEnemy e : enemies) {
+			if (e.dead()) {
+				additionalPickups = e.die();
+				enemyToRemove = e;
+				continue;
+			}
+		}
+		if (enemyToRemove != null) {
+			this.removeEnemy(enemyToRemove);
+			enemyToRemove = null;
+			
+			if (additionalPickups != null) {
+				pickups.addAll(additionalPickups);
+			}
+			
+		}
+		
+		// Check if projectile is colliding with an enemy
+		Rectangle projectileRect;
+		Rectangle enemyRect;
+		BaseEnemy enemyToHit = null;
+		for (Projectile p : projectiles) {
+			projectileRect = p.getAABB().getRect();
+			for (BaseEnemy e : enemies) {
+				enemyRect = e.getAABB().getRect();
+				if (enemyRect.overlaps(projectileRect)) {
+					projectileToRemove = p;
+					enemyToHit = e;
+					break;
+				}
+			}
+			if (projectileToRemove != null) {
+				break;
+			}
+		}
+		
+		if (enemyToHit != null && projectileToRemove != null) {
+			enemyToHit.hit(projectileToRemove, player);
+		}
+		if (projectileToRemove != null) {
+			this.removeProjectile(projectileToRemove);
+			projectileToRemove = null;
+		}
+		
+		
+		// Check if projectile is coliding with a non-movable tile (i.e. wall)
 		for (Projectile p : projectiles) {
 			projectilePosition = p.getPosition();
 			tilePosition = new Vector2(

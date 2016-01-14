@@ -11,7 +11,7 @@ public class DesktopLauncher {
 		config.title = "SpaceMinerGame";
 		config.width  = GameVars.WIDTH;
 		config.height = GameVars.HEIGHT;
-		config.x = 0;
+		config.x = 1920;
 		config.y = 0;
 		new LwjglApplication(new SpaceMinerGame(), config);
 	}

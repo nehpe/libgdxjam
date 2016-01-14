@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.nehpe.spaceminer.screens.LogoScreen;
 import com.nehpe.spaceminer.screens.Screen;
-import com.nehpe.spaceminer.screens.TitleScreen;
 
 public class SpaceMinerGame extends ApplicationAdapter {
 	private Screen currentScreen;

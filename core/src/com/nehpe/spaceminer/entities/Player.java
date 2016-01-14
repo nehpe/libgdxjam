@@ -1,7 +1,6 @@
 package com.nehpe.spaceminer.entities;
 
 import java.util.HashMap;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,13 +8,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.nehpe.spaceminer.physics.Collidable;
-import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.spaceminer.pickups.Pickup;
 import com.nehpe.spaceminer.screens.PlayScreen;
 import com.nehpe.spaceminer.weapons.Pistol;
 import com.nehpe.spaceminer.weapons.Weapon;
 import com.nehpe.utils.Animation;
-import com.nehpe.utils.GameVars;
 import com.nehpe.utils.GameVars.Direction;
 
 public class Player extends Entity {
@@ -37,7 +34,7 @@ public class Player extends Entity {
 		size = new Vector2(16, 16);
 		texture = new Texture(Gdx.files.internal("sheets/char3.png"));
 		sprites = TextureRegion.split(texture, 16, 16);
-		
+
 		currentWeapon = new Pistol();
 
 		this.loadAnimations();
@@ -60,8 +57,9 @@ public class Player extends Entity {
 			currentAnimation.reset();
 		}
 		batch.draw(currentAnimation.getFrame(), position.x, position.y, size.x, size.y);
-		
-		if (currentWeapon != null) currentWeapon.draw(batch, this.position, currentDirection);
+
+		if (currentWeapon != null)
+			currentWeapon.draw(batch, this.position, currentDirection);
 	}
 
 	@Override
@@ -70,15 +68,11 @@ public class Player extends Entity {
 			currentAnimation.tick();
 		}
 	}
-	
+
 	public void move(Vector2 newPosition, PlayScreen playScreen) {
-		Vector2 movement = new Vector2(
-				newPosition.x - position.x,
-				newPosition.y - position.y
-				);
+		Vector2 movement = new Vector2(newPosition.x - position.x, newPosition.y - position.y);
 		position.x = newPosition.x;
 		position.y = newPosition.y;
-		
 		this.moveCamera(movement, playScreen);
 	}
 
@@ -88,9 +82,7 @@ public class Player extends Entity {
 			return position;
 		}
 		moving = true;
-
 		Vector2 proposedPosition = new Vector2(position.x, position.y);
-
 		Vector2 normalizedMovement = currentMovement;
 		normalizedMovement.x *= (speed) * Gdx.graphics.getDeltaTime();
 		normalizedMovement.y *= (speed) * Gdx.graphics.getDeltaTime();
@@ -118,24 +110,24 @@ public class Player extends Entity {
 	public Vector2 getPosition() {
 		return this.position;
 	}
-	
+
 	public Vector2 doCollision(Vector2 proposedMovement, Collidable collidable, World world) {
 		if (collidable instanceof Pickup) {
-			doPickup((Pickup)collidable, world);
+			doPickup((Pickup) collidable, world);
 		}
 		return proposedMovement;
 	}
-	
+
 	public void doPickup(Pickup collidingPickup, World world) {
 		int score = collidingPickup.getScore();
 		this.addScore(score);
 		world.removePickup(collidingPickup);
 	}
-	
+
 	public void addScore(int score) {
 		this.score += score;
 	}
-	
+
 	public int getScore() {
 		return this.score;
 	}

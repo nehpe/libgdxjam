@@ -17,6 +17,7 @@ public class Pistol extends Weapon {
 	Sound sound;
 	TextureRegion[][] frames;
 	HashMap<Direction, Vector2> posOffsets;
+	int damage = 2;
 	
 	public Pistol() {
 		image = new Texture(Gdx.files.internal("weapons/Pistol.png"));
@@ -80,5 +81,10 @@ public class Pistol extends Weapon {
 		fixedPosition.y += positionOffset.y;
 		sound.play(1.0f);
 		return new Projectile(fixedPosition, movement);
+	}
+
+	@Override
+	public int getDamage() {
+		return damage;
 	}
 }

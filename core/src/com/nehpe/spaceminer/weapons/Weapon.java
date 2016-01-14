@@ -9,4 +9,5 @@ public abstract class Weapon {
 	public abstract void draw(SpriteBatch batch, Vector2 position, Direction currentDirection);
 	public abstract void tick();
 	public abstract Projectile fire(Direction direction, Vector2 position);
+	public abstract int getDamage();
 }

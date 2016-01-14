@@ -11,6 +11,7 @@ import com.nehpe.spaceminer.entities.Enemy;
 import com.nehpe.spaceminer.entities.Player;
 import com.nehpe.spaceminer.entities.Projectile;
 import com.nehpe.spaceminer.entities.World;
+import com.nehpe.spaceminer.objects.Table;
 import com.nehpe.spaceminer.physics.Collidable;
 import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.utils.HUD;
@@ -22,7 +23,6 @@ public class PlayScreen extends Screen {
 	public static int lowDisplayHeight;
 	
 	Enemy enemy;
-	BlobEnemy blob;
 	Player player;
 	SpriteBatch batch;
 	public OrthographicCamera camera;
@@ -32,8 +32,7 @@ public class PlayScreen extends Screen {
 
 	public PlayScreen(SpaceMinerGame game) {
 		super(game);
-		enemy = new Enemy();
-		blob = new BlobEnemy(new Vector2(16*4, 16*4));
+		
 		player = new Player();
 		batch = new SpriteBatch();
 
@@ -47,6 +46,45 @@ public class PlayScreen extends Screen {
 		camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
 		camera.update();
 		world = new World();
+		world.addEnemy(new BlobEnemy(new Vector2(16*4, 16*4)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*5, 16*5)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*10, 16*6)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*12, 16*2)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*2, 16*4)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*3, 16*7)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*4, 16*4)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*5, 16*5)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*10, 16*6)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*12, 16*2)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*2, 16*4)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*3, 16*7)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*4, 16*4)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*5, 16*5)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*10, 16*6)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*12, 16*2)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*2, 16*4)));
+		world.addEnemy(new BlobEnemy(new Vector2(16*3, 16*7)));
+		
+		world.addObject(new Table(new Vector2(16*10, 16*10)));
+		world.addObject(new Table(new Vector2(16*10, 16*16)));
+		world.addObject(new Table(new Vector2(16*16, 16*16)));
+		world.addObject(new Table(new Vector2(16*16, 16*10)));
+		
+		world.addObject(new Table(new Vector2(16*13, 16*7)));
+		world.addObject(new Table(new Vector2(16*7, 16*13)));
+		world.addObject(new Table(new Vector2(16*13, 16*13)));
+		world.addObject(new Table(new Vector2(16*7, 16*7)));
+		
+		world.addObject(new Table(new Vector2(16*2, 16*2)));
+		world.addObject(new Table(new Vector2(16*2, 16*5)));
+		world.addObject(new Table(new Vector2(16*5, 16*5)));
+		world.addObject(new Table(new Vector2(16*5, 16*2)));
+		
+		world.addObject(new Table(new Vector2(16*10, 16*10)));
+		world.addObject(new Table(new Vector2(16*10, 16*20)));
+		world.addObject(new Table(new Vector2(16*20, 16*20)));
+		world.addObject(new Table(new Vector2(16*20, 16*10)));
+		
 		hud = new HUD();
 	}
 
@@ -62,10 +100,6 @@ public class PlayScreen extends Screen {
 		batch.begin();
 
 		world.drawBackground(batch);
-
-		enemy.draw(batch);
-		
-		blob.draw(batch);
 
 		player.draw(batch);
 		
@@ -145,8 +179,7 @@ public class PlayScreen extends Screen {
 	@Override
 	public void tick() {
 		player.tick();
-		world.tick();
-		blob.tick();
+		world.tick(player);
 		hud.tick(player);
 	}
 
