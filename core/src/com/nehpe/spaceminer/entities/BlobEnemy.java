@@ -28,6 +28,7 @@ public class BlobEnemy extends BaseEnemy {
 	float timer = 0f;
 	public float speed = 50f;
 	int presents = 0;
+	float gunTimer = 0f;
 
 	public BlobEnemy(Vector2 position) {
 		this.position = position;
@@ -72,7 +73,6 @@ public class BlobEnemy extends BaseEnemy {
 				
 				// Are we close enough to start attacking?
 				if (Math.abs(positionDifference.x) < 64 && Math.abs(positionDifference.y) < 64) {
-					System.out.println("Close enough to attack");
 					this.fire(player, information);
 					timer = 0f;
 				}
@@ -129,14 +129,21 @@ public class BlobEnemy extends BaseEnemy {
 	}
 
 	private void fire(Player player, AIInformation information) {
-		float atan = (float)Math.atan2(player.getPosition().y, player.getPosition().y) - 1;
-		float angle = (float)(atan * (180f/Math.PI));
-		Vector2 movement = new Vector2(0,0);
-		
-		movement.x = (float)Math.cos(angle * (Math.PI/180));
-		movement.y = (float)Math.sin(angle * (Math.PI/180));
-		
-//		information.getWorld().addProjectile(new Projectile(this.position, movement));
+		gunTimer += Gdx.graphics.getDeltaTime();
+		if (gunTimer > 2.5f) {
+			gunTimer = 0f;
+			World world;
+			world = information.getWorld();
+
+			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(0, 1))); // Up
+			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(1, 0))); // Right
+			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(-1, 0))); // Left
+			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(0, -1))); // Down
+			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(1, 1))); // TR
+			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(-1, 1))); // TL
+			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(1, -1))); // BR
+			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(-1, -1))); // BL
+		}
 	}
 
 	private void move(Vector2 movementVelocity) {

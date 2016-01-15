@@ -15,6 +15,7 @@ public class World {
 	private Level level;
 	ArrayList<Pickup> pickups;
 	ArrayList<Projectile> projectiles;
+	ArrayList<EnemyProjectile> enemyProjectiles;
 	ArrayList<BaseEnemy> enemies;
 	ArrayList<BaseObject> objects;
 	int[][] collidables;
@@ -22,6 +23,7 @@ public class World {
 		level = new Level();
 		pickups = new ArrayList<Pickup>();
 		projectiles = new ArrayList<Projectile>();
+		enemyProjectiles = new ArrayList<EnemyProjectile>();
 		enemies = new ArrayList<BaseEnemy>();
 		objects = new ArrayList<BaseObject>();
 		this.initial_setup();
@@ -38,6 +40,14 @@ public class World {
 	
 	public void removeProjectile(Projectile projectile) {
 		projectiles.remove(projectile);
+	}
+
+	public void addEnemyProjectile(EnemyProjectile projectile) {
+		enemyProjectiles.add(projectile);
+	}
+
+	public void removeEnemyProjectile(EnemyProjectile projectile) {
+		enemyProjectiles.remove(projectile);
 	}
 	
 	public void removePickup(Pickup pickup) {
@@ -78,6 +88,10 @@ public class World {
 		for (Projectile p : projectiles) {
 			p.draw(batch);
 		}
+		
+		for (EnemyProjectile p : enemyProjectiles) {
+			p.draw(batch);
+		}
 		for (BaseEnemy e : enemies) {
 			e.draw(batch);
 		}
@@ -88,6 +102,9 @@ public class World {
 			p.tick();
 		}
 		for (Projectile p : projectiles) {
+			p.tick();
+		}
+		for (EnemyProjectile p : enemyProjectiles) {
 			p.tick();
 		}
 		AIInformation info = this.gatherAIInformation();
@@ -176,6 +193,23 @@ public class World {
 		if (projectileToRemove != null) {
 			this.removeProjectile(projectileToRemove);
 		}
+		// Check if enemy projectile is colliding with a non-movable tile (i.e. wall)
+		EnemyProjectile enemyProjectileToRemove = null;
+		for (EnemyProjectile p : enemyProjectiles) {
+			projectilePosition = p.getPosition();
+			tilePosition = new Vector2(
+					(float)Math.floor(projectilePosition.x/16),
+					(float)Math.floor(projectilePosition.y/16)
+					);
+			if (collidables[(int) tilePosition.x][(int) tilePosition.y] == 1) {
+				enemyProjectileToRemove = p;
+				break;
+			}
+		}
+		if (enemyProjectileToRemove != null) {
+			this.removeEnemyProjectile(enemyProjectileToRemove);
+		}
+		
 	}
 	
 	public Collidable checkPlayerCollisions(Vector2 playerPosition) {
