@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.nehpe.utils.AABB;
 
 public class Present extends Pickup {
 	private Texture image;
@@ -26,6 +27,11 @@ public class Present extends Pickup {
 	@Override
 	public int getScore() {
 		return 25;
+	}
+
+	@Override
+	public AABB getAABB() {
+		return new AABB(position, new Vector2(16, 16));
 	}
 
 }

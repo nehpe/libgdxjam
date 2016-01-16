@@ -2,6 +2,7 @@ package com.nehpe.spaceminer.pickups;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.nehpe.utils.AABB;
 import com.nehpe.utils.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -33,4 +34,8 @@ public class RedGem extends Pickup {
 		return 250;
 	}
 
+	@Override
+	public AABB getAABB() {
+		return new AABB(position, new Vector2(16, 16));
+	}
 }

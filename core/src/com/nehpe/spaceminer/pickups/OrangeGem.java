@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.nehpe.utils.AABB;
 import com.nehpe.utils.Animation;
 
 public class OrangeGem extends Pickup {
@@ -32,6 +33,12 @@ public class OrangeGem extends Pickup {
 	@Override
 	public int getScore() {
 		return 1000;
+	}
+
+
+	@Override
+	public AABB getAABB() {
+		return new AABB(position, new Vector2(16, 16));
 	}
 
 }
