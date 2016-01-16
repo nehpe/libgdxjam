@@ -146,16 +146,16 @@ public class PlayScreen extends Screen {
 		}
 
 		Vector2 proposedMovement = player.proposeMove(currentMovement);
-		Collidable collision = world.checkPlayerCollisions(proposedMovement);
+		Collidable collision = world.checkPlayerCollisions(proposedMovement, player.getAABB().getRect());
 		if (collision != null) {
 			// Check if there is a collision with our X movement
 			Vector2 playerPosition = player.getPosition();
 			Vector2 proposedDirectionalMovement = new Vector2(proposedMovement.x, playerPosition.y);
-			collision = world.checkPlayerCollisions(proposedDirectionalMovement);
+			collision = world.checkPlayerCollisions(proposedDirectionalMovement, player.getAABB().getRect());
 			if (collision != null && collision instanceof Wall) {
 				// There is! Is it also along Y?
 				proposedDirectionalMovement = new Vector2(playerPosition.x, proposedMovement.y);
-				collision = world.checkPlayerCollisions(proposedDirectionalMovement);
+				collision = world.checkPlayerCollisions(proposedDirectionalMovement, player.getAABB().getRect());
 				if (collision != null && collision instanceof Wall) { 
 					// Our movement causes collisions on both axes, so we can't do the proposed move
 					proposedMovement = playerPosition;

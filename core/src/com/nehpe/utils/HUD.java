@@ -26,7 +26,6 @@ public class HUD {
 	
 	HealthBar bar;
 
-
 	public HUD() {
 		batch = new SpriteBatch();
 		// Load fonts
@@ -65,6 +64,7 @@ public class HUD {
 			savings = player.getScore();
 			this.redoScoreLayout();
 		}
+		bar.updateHealth(player.getHealth());
 	}
 
 	private void redoScoreLayout() {

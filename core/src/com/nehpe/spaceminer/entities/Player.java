@@ -12,6 +12,7 @@ import com.nehpe.spaceminer.pickups.Pickup;
 import com.nehpe.spaceminer.screens.PlayScreen;
 import com.nehpe.spaceminer.weapons.Pistol;
 import com.nehpe.spaceminer.weapons.Weapon;
+import com.nehpe.utils.AABB;
 import com.nehpe.utils.Animation;
 import com.nehpe.utils.GameVars.Direction;
 
@@ -25,6 +26,7 @@ public class Player extends Entity {
 	Direction currentDirection = Direction.DOWN;
 	Weapon currentWeapon = null;
 	int score = 0;
+	int health = 10;
 
 	TextureRegion[][] sprites;
 	public float speed = 60f;
@@ -170,5 +172,25 @@ public class Player extends Entity {
 		if (currentWeapon == null)
 			return null;
 		return currentWeapon.fire(Direction.LEFT, this.position);
+	}
+
+	public AABB getAABB() {
+		return new AABB(position, new Vector2(16, 16));
+	}
+
+	public void hit(int damage) {
+		
+		this.health -= damage;
+		if (this.health < 0) {
+			this.health = 0;
+		}
+	}
+	
+	public boolean dead() {
+		return (this.health == 0);
+	}
+	
+	public int getHealth() {
+		return this.health;
 	}
 }

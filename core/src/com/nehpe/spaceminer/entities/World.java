@@ -19,6 +19,7 @@ public class World {
 	ArrayList<BaseEnemy> enemies;
 	ArrayList<BaseObject> objects;
 	int[][] collidables;
+
 	public World() {
 		level = new Level();
 		pickups = new ArrayList<Pickup>();
@@ -28,16 +29,15 @@ public class World {
 		objects = new ArrayList<BaseObject>();
 		this.initial_setup();
 	}
-	
+
 	private void initial_setup() {
-		
 		collidables = level.getCollidables();
 	}
-	
+
 	public void addProjectile(Projectile projectile) {
 		projectiles.add(projectile);
 	}
-	
+
 	public void removeProjectile(Projectile projectile) {
 		projectiles.remove(projectile);
 	}
@@ -49,46 +49,46 @@ public class World {
 	public void removeEnemyProjectile(EnemyProjectile projectile) {
 		enemyProjectiles.remove(projectile);
 	}
-	
+
 	public void removePickup(Pickup pickup) {
 		pickups.remove(pickup);
 	}
-	
+
 	public void addEnemy(BaseEnemy enemy) {
 		enemies.add(enemy);
 	}
-	
+
 	public void removeEnemy(BaseEnemy enemy) {
 		enemies.remove(enemy);
 	}
-	
+
 	public void addObject(BaseObject object) {
 		objects.add(object);
 	}
-	
+
 	public void removeObject(BaseObject object) {
 		objects.remove(object);
 	}
 
 	public void drawBackground(SpriteBatch batch) {
 		level.draw(batch);
-		
+
 		// Draw pickups
 		for (Pickup p : pickups) {
 			p.draw(batch);
 		}
-		
+
 		// Draw objects
 		for (BaseObject o : objects) {
 			o.draw(batch);
 		}
 	}
-	
+
 	public void drawForeground(SpriteBatch batch) {
 		for (Projectile p : projectiles) {
 			p.draw(batch);
 		}
-		
+
 		for (EnemyProjectile p : enemyProjectiles) {
 			p.draw(batch);
 		}
@@ -96,7 +96,7 @@ public class World {
 			e.draw(batch);
 		}
 	}
-	
+
 	public void tick(Player player) {
 		for (Pickup p : pickups) {
 			p.tick();
@@ -114,10 +114,10 @@ public class World {
 		for (BaseObject o : objects) {
 			o.tick();
 		}
-		
+
 		this.checkNonPlayerCollisions(player);
 	}
-	
+
 	private AIInformation gatherAIInformation() {
 		AIInformation info = new AIInformation();
 		info.setObjects(objects);
@@ -126,10 +126,10 @@ public class World {
 	}
 
 	public void checkNonPlayerCollisions(Player player) {
-		Vector2 tilePosition = new Vector2(0,0);
-		Vector2 projectilePosition = new Vector2(0,0);
+		Vector2 tilePosition = new Vector2(0, 0);
+		Vector2 projectilePosition = new Vector2(0, 0);
 		Projectile projectileToRemove = null;
-		
+
 		ArrayList<Pickup> additionalPickups = null;
 		// Check if dead
 		BaseEnemy enemyToRemove = null;
@@ -143,13 +143,13 @@ public class World {
 		if (enemyToRemove != null) {
 			this.removeEnemy(enemyToRemove);
 			enemyToRemove = null;
-			
+
 			if (additionalPickups != null) {
 				pickups.addAll(additionalPickups);
 			}
-			
+
 		}
-		
+
 		// Check if projectile is colliding with an enemy
 		Rectangle projectileRect;
 		Rectangle enemyRect;
@@ -168,7 +168,7 @@ public class World {
 				break;
 			}
 		}
-		
+
 		if (enemyToHit != null && projectileToRemove != null) {
 			enemyToHit.hit(projectileToRemove, player);
 		}
@@ -176,15 +176,13 @@ public class World {
 			this.removeProjectile(projectileToRemove);
 			projectileToRemove = null;
 		}
-		
-		
+
 		// Check if projectile is coliding with a non-movable tile (i.e. wall)
 		for (Projectile p : projectiles) {
 			projectilePosition = p.getPosition();
 			tilePosition = new Vector2(
-					(float)Math.floor(projectilePosition.x/16),
-					(float)Math.floor(projectilePosition.y/16)
-					);
+					(float) Math.floor(projectilePosition.x / 16),
+					(float) Math.floor(projectilePosition.y / 16));
 			if (collidables[(int) tilePosition.x][(int) tilePosition.y] == 1) {
 				projectileToRemove = p;
 				break;
@@ -193,14 +191,36 @@ public class World {
 		if (projectileToRemove != null) {
 			this.removeProjectile(projectileToRemove);
 		}
-		// Check if enemy projectile is colliding with a non-movable tile (i.e. wall)
+
 		EnemyProjectile enemyProjectileToRemove = null;
+
+		// Check if enemy projectile is hitting player
+		Rectangle playerRect = player.getAABB().getRect();
+		projectileRect = null;
+
+		for (EnemyProjectile p : enemyProjectiles) {
+			projectileRect = p.getAABB().getRect();
+
+			if (projectileRect.overlaps(playerRect)) {
+				player.hit(p.getDamage());
+				enemyProjectileToRemove = p;
+				break;
+			}
+		}
+
+		if (enemyProjectileToRemove != null) {
+			this.removeEnemyProjectile(enemyProjectileToRemove);
+		}
+
+		enemyProjectileToRemove = null;
+		// Check if enemy projectile is colliding with a non-movable tile (i.e.
+		// wall)
+
 		for (EnemyProjectile p : enemyProjectiles) {
 			projectilePosition = p.getPosition();
 			tilePosition = new Vector2(
-					(float)Math.floor(projectilePosition.x/16),
-					(float)Math.floor(projectilePosition.y/16)
-					);
+					(float) Math.floor(projectilePosition.x / 16),
+					(float) Math.floor(projectilePosition.y / 16));
 			if (collidables[(int) tilePosition.x][(int) tilePosition.y] == 1) {
 				enemyProjectileToRemove = p;
 				break;
@@ -209,27 +229,27 @@ public class World {
 		if (enemyProjectileToRemove != null) {
 			this.removeEnemyProjectile(enemyProjectileToRemove);
 		}
-		
+
 	}
-	
-	public Collidable checkPlayerCollisions(Vector2 playerPosition) {
-		Vector2 tilePosition = new Vector2(
-				(float)Math.floor(playerPosition.x/16),
-				(float)Math.floor(playerPosition.y/16)
-				);
-		Vector2 pickupTilePosition;
+
+	public Collidable checkPlayerCollisions(Vector2 playerPosition,
+			Rectangle playerRect) {
+
+		Rectangle pickupRect = null;
 		for (Pickup p : pickups) {
-			pickupTilePosition = p.getTilePosition();
-			if (pickupTilePosition.x == tilePosition.x &&
-					pickupTilePosition.y == tilePosition.y) {
+			pickupRect = p.getAABB().getRect();
+			if (pickupRect.overlaps(playerRect))
 				return p;
-			}
 		}
-		
+
+		Vector2 tilePosition = new Vector2(
+				(float) Math.floor(playerPosition.x / 16),
+				(float) Math.floor(playerPosition.y / 16));
+
 		if (collidables[(int) tilePosition.x][(int) tilePosition.y] == 1) {
 			return new Wall(tilePosition);
 		}
-		
+
 		return null;
 	}
 }
