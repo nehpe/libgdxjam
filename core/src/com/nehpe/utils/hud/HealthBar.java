@@ -62,6 +62,14 @@ public class HealthBar {
 		}
 		this.width = (int) (fullbarWidth * (float)(health/10f));
 	}
+	
+	public int getHealth() {
+		return this.health;
+	}
+	
+	public boolean isDead() {
+		return (this.health == 0);
+	}
 
 	public void tick() {
 	}

@@ -2,6 +2,7 @@ package com.nehpe.spaceminer.entities;
 
 import java.util.HashMap;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -29,13 +30,15 @@ public class Player extends Entity {
 	int health = 10;
 
 	TextureRegion[][] sprites;
+	Texture dead;
 	public float speed = 60f;
 
-	public Player() {
-		position = new Vector2(8 * 16, 7 * 16);
+	public Player(Vector2 tilePosition) {
+		position = new Vector2(tilePosition.x * 16, tilePosition.y * 16);
 		size = new Vector2(16, 16);
 		texture = new Texture(Gdx.files.internal("sheets/char3.png"));
 		sprites = TextureRegion.split(texture, 16, 16);
+		dead = new Texture(Gdx.files.internal("sheets/char_dead.png"));
 
 		currentWeapon = new Pistol();
 
@@ -54,6 +57,10 @@ public class Player extends Entity {
 
 	@Override
 	public void draw(SpriteBatch batch) {
+		if (this.dead()) {
+			batch.draw(dead, position.x, position.y);
+			return;
+		}
 		if (!moving) {
 			batch.draw(currentAnimation.getFrame(0), position.x, position.y, size.x, size.y);
 			currentAnimation.reset();
@@ -72,6 +79,7 @@ public class Player extends Entity {
 	}
 
 	public void move(Vector2 newPosition, PlayScreen playScreen) {
+		if (this.dead()) return;
 		Vector2 movement = new Vector2(newPosition.x - position.x, newPosition.y - position.y);
 		position.x = newPosition.x;
 		position.y = newPosition.y;
@@ -116,6 +124,8 @@ public class Player extends Entity {
 	public Vector2 doCollision(Vector2 proposedMovement, Collidable collidable, World world) {
 		if (collidable instanceof Pickup) {
 			doPickup((Pickup) collidable, world);
+			Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/pickup.wav"));
+			sound.play();
 		}
 		return proposedMovement;
 	}
@@ -179,10 +189,15 @@ public class Player extends Entity {
 	}
 
 	public void hit(int damage) {
-		
+		Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/hit.wav"));
+		sound.play();
 		this.health -= damage;
 		if (this.health < 0) {
 			this.health = 0;
+		}
+		if (this.dead()) {
+			Sound diesound = Gdx.audio.newSound(Gdx.files.internal("sounds/die.wav"));
+			diesound.play();
 		}
 	}
 	

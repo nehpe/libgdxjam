@@ -11,81 +11,92 @@ import com.nehpe.spaceminer.entities.Enemy;
 import com.nehpe.spaceminer.entities.Player;
 import com.nehpe.spaceminer.entities.Projectile;
 import com.nehpe.spaceminer.entities.World;
+import com.nehpe.spaceminer.objects.Portal;
 import com.nehpe.spaceminer.objects.Table;
 import com.nehpe.spaceminer.physics.Collidable;
 import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.utils.HUD;
+import com.nehpe.utils.hud.Pause;
+import com.nehpe.utils.hud.Winner;
 
 public class PlayScreen extends Screen {
 	public static int displayWidth;
 	public static int displayHeight;
 	public static int lowDisplayWidth;
 	public static int lowDisplayHeight;
-	
+
 	Enemy enemy;
 	Player player;
 	SpriteBatch batch;
 	public OrthographicCamera camera;
+	Pause pause;
+	Winner win;
 	Vector2 currentMovement;
 	World world;
 	HUD hud;
+//	int targetScore = 10000;
+	int targetScore = 100;
+	boolean gameWon = false;
 
 	public PlayScreen(SpaceMinerGame game) {
 		super(game);
-		
-		player = new Player();
-		batch = new SpriteBatch();
 
-		displayWidth  = (int) Gdx.graphics.getWidth();
+		batch = new SpriteBatch();
+		pause = new Pause();
+		win = new Winner();
+
+		displayWidth = (int) Gdx.graphics.getWidth();
 		displayHeight = (int) Gdx.graphics.getHeight();
-		
-		lowDisplayWidth  = (int)(displayWidth/(displayHeight/(displayHeight/Math.floor(displayHeight/160))));
-		lowDisplayHeight = (int)(displayHeight/Math.floor(displayHeight/160));
+
+		lowDisplayWidth = (int) (displayWidth / (displayHeight / (displayHeight / Math
+				.floor(displayHeight / 160))));
+		lowDisplayHeight = (int) (displayHeight / Math
+				.floor(displayHeight / 160));
+
+		world = new World();
+
+		Vector2 mapDimensions = world.getMapDimensions();
+		Vector2 playerStartPosition = new Vector2(0, 0);
+		playerStartPosition.x = (float) Math.floor(Math.random()
+				* mapDimensions.x);
+		playerStartPosition.y = (float) Math.floor(Math.random()
+				* mapDimensions.y);
+		player = new Player(playerStartPosition);
 
 		camera = new OrthographicCamera(lowDisplayWidth, lowDisplayHeight);
-		camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
+		camera.position.set((playerStartPosition.x * 16),
+				(playerStartPosition.y * 16), 0);
 		camera.update();
-		world = new World();
-		world.addEnemy(new BlobEnemy(new Vector2(16*4, 16*4)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*5, 16*5)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*10, 16*6)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*12, 16*2)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*2, 16*4)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*3, 16*7)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*4, 16*4)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*5, 16*5)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*10, 16*6)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*12, 16*2)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*2, 16*4)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*3, 16*7)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*4, 16*4)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*5, 16*5)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*10, 16*6)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*12, 16*2)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*2, 16*4)));
-		world.addEnemy(new BlobEnemy(new Vector2(16*3, 16*7)));
-		
-		world.addObject(new Table(new Vector2(16*10, 16*10)));
-		world.addObject(new Table(new Vector2(16*10, 16*16)));
-		world.addObject(new Table(new Vector2(16*16, 16*16)));
-		world.addObject(new Table(new Vector2(16*16, 16*10)));
-		
-		world.addObject(new Table(new Vector2(16*13, 16*7)));
-		world.addObject(new Table(new Vector2(16*7, 16*13)));
-		world.addObject(new Table(new Vector2(16*13, 16*13)));
-		world.addObject(new Table(new Vector2(16*7, 16*7)));
-		
-		world.addObject(new Table(new Vector2(16*2, 16*2)));
-		world.addObject(new Table(new Vector2(16*2, 16*5)));
-		world.addObject(new Table(new Vector2(16*5, 16*5)));
-		world.addObject(new Table(new Vector2(16*5, 16*2)));
-		
-		world.addObject(new Table(new Vector2(16*10, 16*10)));
-		world.addObject(new Table(new Vector2(16*10, 16*20)));
-		world.addObject(new Table(new Vector2(16*20, 16*20)));
-		world.addObject(new Table(new Vector2(16*20, 16*10)));
-		
+
+		// Add items
+		world.addEnemy(new BlobEnemy(new Vector2(16 * 4, 16 * 4)));
+		world.addEnemy(new BlobEnemy(new Vector2(16 * 5, 16 * 5)));
+		world.addEnemy(new BlobEnemy(new Vector2(16 * 10, 16 * 6)));
+		world.addEnemy(new BlobEnemy(new Vector2(16 * 12, 16 * 2)));
+		world.addEnemy(new BlobEnemy(new Vector2(16 * 2, 16 * 4)));
+
+		world.addObject(new Table(new Vector2(16 * 10, 16 * 10)));
+		world.addObject(new Table(new Vector2(16 * 10, 16 * 16)));
+		world.addObject(new Table(new Vector2(16 * 16, 16 * 16)));
+		world.addObject(new Table(new Vector2(16 * 16, 16 * 10)));
+
+		world.addObject(new Table(new Vector2(16 * 13, 16 * 7)));
+		world.addObject(new Table(new Vector2(16 * 7, 16 * 13)));
+		world.addObject(new Table(new Vector2(16 * 13, 16 * 13)));
+		world.addObject(new Table(new Vector2(16 * 7, 16 * 7)));
+
+		world.addObject(new Table(new Vector2(16 * 2, 16 * 2)));
+		world.addObject(new Table(new Vector2(16 * 2, 16 * 5)));
+		world.addObject(new Table(new Vector2(16 * 5, 16 * 5)));
+		world.addObject(new Table(new Vector2(16 * 5, 16 * 2)));
+
+		world.addObject(new Table(new Vector2(16 * 10, 16 * 10)));
+		world.addObject(new Table(new Vector2(16 * 10, 16 * 20)));
+		world.addObject(new Table(new Vector2(16 * 20, 16 * 20)));
+		world.addObject(new Table(new Vector2(16 * 20, 16 * 10)));
+
 		hud = new HUD();
+
 	}
 
 	public OrthographicCamera getCamera() {
@@ -94,28 +105,48 @@ public class PlayScreen extends Screen {
 
 	@Override
 	public void draw() {
-		camera.update();
-		batch.setProjectionMatrix(this.getCamera().combined);
+		if (!pause.isPaused() && !win.won()) {
+			camera.update();
+			batch.setProjectionMatrix(this.getCamera().combined);
 
-		batch.begin();
+			batch.begin();
 
-		world.drawBackground(batch);
+			world.drawBackground(batch);
 
-		player.draw(batch);
+			player.draw(batch);
+
+			world.drawForeground(batch);
+
+			batch.end();
+
+			hud.draw();
+		} else if (win.won()) {
+			win.draw();
+		} else {
+			pause.draw();
+		}
 		
-		world.drawForeground(batch);
-
-		batch.end();
-
-		hud.draw();
 	}
 
 	@Override
 	public void input() {
-		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-			Gdx.app.exit();
+		if (win.won()) {
+			win.input(this);
+			return;
+		}
+		if (pause.isPaused()) {
+			pause.input(this);
+			return;
 		}
 		
+		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+			pause.pause();
+		}
+
+		if (player.dead() && Gdx.input.isKeyJustPressed(Keys.R)) {
+			this.restart();
+		}
+
 		currentMovement = new Vector2(0, 0);
 		if (Gdx.input.isKeyPressed(Keys.W)) {
 			currentMovement.y = 1;
@@ -129,7 +160,7 @@ public class PlayScreen extends Screen {
 		if (Gdx.input.isKeyPressed(Keys.D)) {
 			currentMovement.x = 1;
 		}
-		
+
 		Projectile projectile = null;
 		if (Gdx.input.isKeyJustPressed(Keys.UP)) {
 			projectile = player.attackUp();
@@ -140,47 +171,71 @@ public class PlayScreen extends Screen {
 		} else if (Gdx.input.isKeyJustPressed(Keys.RIGHT)) {
 			projectile = player.attackRight();
 		}
-		
+
 		if (projectile != null) {
 			world.addProjectile(projectile);
 		}
 
 		Vector2 proposedMovement = player.proposeMove(currentMovement);
-		Collidable collision = world.checkPlayerCollisions(proposedMovement, player.getAABB().getRect());
+		Collidable collision = world.checkPlayerCollisions(proposedMovement,
+				player.getAABB().getRect());
 		if (collision != null) {
 			// Check if there is a collision with our X movement
 			Vector2 playerPosition = player.getPosition();
-			Vector2 proposedDirectionalMovement = new Vector2(proposedMovement.x, playerPosition.y);
-			collision = world.checkPlayerCollisions(proposedDirectionalMovement, player.getAABB().getRect());
+			Vector2 proposedDirectionalMovement = new Vector2(
+					proposedMovement.x, playerPosition.y);
+			collision = world.checkPlayerCollisions(
+					proposedDirectionalMovement, player.getAABB().getRect());
 			if (collision != null && collision instanceof Wall) {
 				// There is! Is it also along Y?
-				proposedDirectionalMovement = new Vector2(playerPosition.x, proposedMovement.y);
-				collision = world.checkPlayerCollisions(proposedDirectionalMovement, player.getAABB().getRect());
-				if (collision != null && collision instanceof Wall) { 
-					// Our movement causes collisions on both axes, so we can't do the proposed move
+				proposedDirectionalMovement = new Vector2(playerPosition.x,
+						proposedMovement.y);
+				collision = world
+						.checkPlayerCollisions(proposedDirectionalMovement,
+								player.getAABB().getRect());
+				if (collision != null && collision instanceof Wall) {
+					// Our movement causes collisions on both axes, so we can't
+					// do the proposed move
 					proposedMovement = playerPosition;
 				} else {
-					// Our movement is only colliding on the X axis, so we can still move Y
+					// Our movement is only colliding on the X axis, so we can
+					// still move Y
 					// Reset our X
 					proposedMovement.x = playerPosition.x;
 				}
-				
+
 			} else if (collision instanceof Wall) {
 				// By default, our collision must be on the Y axis.
 				// Reset the Y and proceed
 				proposedMovement.y = playerPosition.y;
 			}
-			proposedMovement = player.doCollision(proposedMovement, collision, world);
+			proposedMovement = player.doCollision(proposedMovement, collision,
+					world);
 		}
-		
+
 		player.move(proposedMovement, this);
+	}
+
+	public void restart() {
+		this.game.nextScreen(new PlayScreen(this.game));
 	}
 
 	@Override
 	public void tick() {
-		player.tick();
-		world.tick(player);
-		hud.tick(player);
+		if (!pause.isPaused() && !win.won()) {
+			player.tick();
+			world.tick(player);
+			hud.tick(player);
+			if (player.getScore() >= targetScore) {
+				this.winTheGame();				
+			}
+		}
 	}
-
+	
+	/** You just lost the game =) **/
+	private void winTheGame() {
+		gameWon = true;
+		win.win(); // It's a win win =)
+		
+	}
 }

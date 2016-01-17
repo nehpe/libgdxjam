@@ -2,6 +2,8 @@ package com.nehpe.spaceminer.entities;
 
 import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -28,7 +30,9 @@ public class BlobEnemy extends BaseEnemy {
 	float timer = 0f;
 	public float speed = 50f;
 	int presents = 0;
-	float gunTimer = 0f;
+	float gunTimer = 2.6f;
+	float tintTimer = 0f;
+	boolean tint = false;
 
 	public BlobEnemy(Vector2 position) {
 		this.position = position;
@@ -40,7 +44,21 @@ public class BlobEnemy extends BaseEnemy {
 
 	@Override
 	public void draw(SpriteBatch batch) {
+		boolean tintNow = false;
+		if (tint) {
+			tintTimer += Gdx.graphics.getDeltaTime();
+			if (tintTimer > 0.5f) {
+				tintTimer = 0f;
+				tint = false;
+			} else {
+				tintNow = true;
+			}
+		}
+		if (tintNow)
+			batch.setColor(new Color(Color.RED));
 		batch.draw(animation.getFrame(), this.position.x, this.position.y);
+		if (tintNow)
+			batch.setColor(new Color(Color.WHITE));
 	}
 
 	@Override
@@ -50,29 +68,33 @@ public class BlobEnemy extends BaseEnemy {
 	}
 
 	private void ai_tick(AIInformation information) {
+		this.check_if_player_is_close(information);
 		if (currentAIState == State.NONE) {
 			this.shop(information);
 		}
 
 		if (currentAIState == State.SHOPPING) {
 			timer += Gdx.graphics.getDeltaTime();
-			// System.out.println(timer);
 			if (timer > 10f) {
-				presents++;
+				if (presents < 5f) {
+					presents++;
+				}
 				timer = 0f;
 				currentAIState = State.NONE;
 			}
 		}
-		
+
 		Vector2 positionDifference;
 		if (currentAIState == State.ATTACKING) {
 			if (target instanceof Player) {
-				Player player = (Player)target;
-				positionDifference = new Vector2(player.getPosition().x - this.position.x,
-						player.getPosition().y - this.position.y);
-				
+				Player player = (Player) target;
+				positionDifference = new Vector2(player.getPosition().x
+						- this.position.x, player.getPosition().y
+						- this.position.y);
+
 				// Are we close enough to start attacking?
-				if (Math.abs(positionDifference.x) < 64 && Math.abs(positionDifference.y) < 64) {
+				if (Math.abs(positionDifference.x) < 64
+						&& Math.abs(positionDifference.y) < 64) {
 					this.fire(player, information);
 					timer = 0f;
 				}
@@ -100,9 +122,10 @@ public class BlobEnemy extends BaseEnemy {
 			// If we are, change the state
 			// If we aren't, move to the target
 			if (target instanceof BaseObject) {
-				positionDifference = new Vector2(targetPosition.x - this.position.x,
-						targetPosition.y - this.position.y);
-				if (Math.abs(positionDifference.x) < 1 && Math.abs(positionDifference.y) < 1) {
+				positionDifference = new Vector2(targetPosition.x
+						- this.position.x, targetPosition.y - this.position.y);
+				if (Math.abs(positionDifference.x) < 1
+						&& Math.abs(positionDifference.y) < 1) {
 					this.position = targetPosition;
 					currentAIState = State.SHOPPING;
 					timer = 0f;
@@ -128,6 +151,18 @@ public class BlobEnemy extends BaseEnemy {
 		}
 	}
 
+	private void check_if_player_is_close(AIInformation information) {
+		Vector2 difference = new Vector2();
+		difference.x = information.getPlayer().getPosition().x
+				- this.position.x;
+		difference.y = information.getPlayer().getPosition().y
+				- this.position.y;
+
+		if (difference.x < 16 && difference.y < 16) {
+			this.attack(information.getPlayer());
+		}
+	}
+
 	private void fire(Player player, AIInformation information) {
 		gunTimer += Gdx.graphics.getDeltaTime();
 		if (gunTimer > 2.5f) {
@@ -135,14 +170,26 @@ public class BlobEnemy extends BaseEnemy {
 			World world;
 			world = information.getWorld();
 
-			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(0, 1))); // Up
-			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(1, 0))); // Right
-			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(-1, 0))); // Left
-			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(0, -1))); // Down
-			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(1, 1))); // TR
-			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(-1, 1))); // TL
-			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(1, -1))); // BR
-			world.addEnemyProjectile(new EnemyProjectile(this.position, new Vector2(-1, -1))); // BL
+			world.addEnemyProjectile(new EnemyProjectile(this.position,
+					new Vector2(0, 1))); // Up
+			world.addEnemyProjectile(new EnemyProjectile(this.position,
+					new Vector2(1, 0))); // Right
+			world.addEnemyProjectile(new EnemyProjectile(this.position,
+					new Vector2(-1, 0))); // Left
+			world.addEnemyProjectile(new EnemyProjectile(this.position,
+					new Vector2(0, -1))); // Down
+			world.addEnemyProjectile(new EnemyProjectile(this.position,
+					new Vector2(1, 1))); // TR
+			world.addEnemyProjectile(new EnemyProjectile(this.position,
+					new Vector2(-1, 1))); // TL
+			world.addEnemyProjectile(new EnemyProjectile(this.position,
+					new Vector2(1, -1))); // BR
+			world.addEnemyProjectile(new EnemyProjectile(this.position,
+					new Vector2(-1, -1))); // BL
+
+			Sound sound = Gdx.audio.newSound(Gdx.files
+					.internal("sounds/enemy_shot.wav"));
+			sound.play();
 		}
 	}
 
@@ -176,7 +223,11 @@ public class BlobEnemy extends BaseEnemy {
 
 	@Override
 	public void hit(Projectile projectile, Player player) {
+		tint = true;
 		this.health -= projectile.getDamage();
+		Sound sound = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/hit_enemy.wav"));
+		sound.play();
 		this.attack(player);
 	}
 

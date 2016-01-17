@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.nehpe.spaceminer.entities.ai.AIInformation;
 import com.nehpe.spaceminer.levels.Level;
 import com.nehpe.spaceminer.objects.BaseObject;
+import com.nehpe.spaceminer.objects.Portal;
 import com.nehpe.spaceminer.physics.Collidable;
 import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.spaceminer.pickups.Pickup;
@@ -19,6 +20,9 @@ public class World {
 	ArrayList<BaseEnemy> enemies;
 	ArrayList<BaseObject> objects;
 	int[][] collidables;
+	int collidables_w;
+	int collidables_h;
+	Portal portal;
 
 	public World() {
 		level = new Level();
@@ -27,11 +31,18 @@ public class World {
 		enemyProjectiles = new ArrayList<EnemyProjectile>();
 		enemies = new ArrayList<BaseEnemy>();
 		objects = new ArrayList<BaseObject>();
+		portal = new Portal(new Vector2(16*25, 16*2));
 		this.initial_setup();
 	}
 
 	private void initial_setup() {
 		collidables = level.getCollidables();
+		collidables_w = collidables.length;
+		collidables_h = collidables[0].length;
+	}
+	
+	public Vector2 getMapDimensions() {
+		return new Vector2(collidables_w, collidables_h);
 	}
 
 	public void addProjectile(Projectile projectile) {
@@ -73,15 +84,18 @@ public class World {
 	public void drawBackground(SpriteBatch batch) {
 		level.draw(batch);
 
+		// Draw objects
+		for (BaseObject o : objects) {
+			o.draw(batch);
+		}
+		
+		portal.draw(batch);
+
 		// Draw pickups
 		for (Pickup p : pickups) {
 			p.draw(batch);
 		}
 
-		// Draw objects
-		for (BaseObject o : objects) {
-			o.draw(batch);
-		}
 	}
 
 	public void drawForeground(SpriteBatch batch) {
@@ -107,19 +121,21 @@ public class World {
 		for (EnemyProjectile p : enemyProjectiles) {
 			p.tick();
 		}
-		AIInformation info = this.gatherAIInformation();
+		AIInformation info = this.gatherAIInformation(player);
 		for (BaseEnemy e : enemies) {
 			e.tick(info);
 		}
 		for (BaseObject o : objects) {
 			o.tick();
 		}
+		portal.tick(this);
 
 		this.checkNonPlayerCollisions(player);
 	}
 
-	private AIInformation gatherAIInformation() {
+	private AIInformation gatherAIInformation(Player player) {
 		AIInformation info = new AIInformation();
+		info.setPlayer(player);
 		info.setObjects(objects);
 		info.setWorld(this);
 		return info;
@@ -143,11 +159,9 @@ public class World {
 		if (enemyToRemove != null) {
 			this.removeEnemy(enemyToRemove);
 			enemyToRemove = null;
-
 			if (additionalPickups != null) {
 				pickups.addAll(additionalPickups);
 			}
-
 		}
 
 		// Check if projectile is colliding with an enemy
@@ -221,7 +235,12 @@ public class World {
 			tilePosition = new Vector2(
 					(float) Math.floor(projectilePosition.x / 16),
 					(float) Math.floor(projectilePosition.y / 16));
-			if (collidables[(int) tilePosition.x][(int) tilePosition.y] == 1) {
+			if (tilePosition.x < 0 || tilePosition.y < 0
+					|| tilePosition.x >= collidables_w
+					|| tilePosition.y >= collidables_h) {
+				enemyProjectileToRemove = p;
+				break;
+			} else if (collidables[(int) tilePosition.x][(int) tilePosition.y] == 1) {
 				enemyProjectileToRemove = p;
 				break;
 			}

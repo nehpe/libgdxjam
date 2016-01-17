@@ -35,5 +35,8 @@ public class AIInformation {
 	public World getWorld() {
 		return this.world;
 	}
-
+	
+	public Player getPlayer() {
+		return this.player;
+	}
 }
