@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="16" tileheight="16" nextobjectid="1">
- <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16" tilecount="16">
+ <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16">
   <image source="../sheets/sheet.png" width="64" height="64"/>
  </tileset>
  <layer name="Tile Layer 1" width="40" height="40">
@@ -11,6 +11,16 @@
  <layer name="Collidables" width="40" height="40">
   <data encoding="base64" compression="zlib">
    eJztzrEJwDAQxdBvHEMaG+8/bW4HNRfQA/UaSWbTnmqlrzf+Ef4x/jH+Mf4x/jH+Mf4x/jH+Mf4x/jH+Mf4x/jH+Mf4x/jF/+NvVadqtPkfYBJc=
+  </data>
+ </layer>
+ <layer name="Tables" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztllESgCAIBZ3uf+guEIk+IJx2v/wIHm2ONgbAnMtY79SvZuzkecjqO8vCXz1/98f+i8vK8lcN/jTwp7E6k+d8sXriLy4Lf1rWl/dv5Dt3/KYWHWftOJPFyqzq/vbWq/4q/lF3+uPvPSvy2aca/Gn98af1x18NJ92/kMMNm/cAxQ==
+  </data>
+ </layer>
+ <layer name="Portals" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJzt17ENADAIAzCGDv3/4t6AFIYKe0YoY1JFwhn8fZv3k1kAAH63vSt1uyUAAGyQ2gmJvr19syQ9SJ4ALQ==
   </data>
  </layer>
 </map>

@@ -27,6 +27,9 @@ public class Pause {
 	Vector2 instructions2Positioning;
 	String instructions1 = "Press Q to Quit";
 	String instructions2 = "Press R to Restart";
+	int score = 0;
+	GlyphLayout scoreLayout;
+	Vector2 scorePositioning;
 	
 	public Pause() {
 		bigFont = new BitmapFont(Gdx.files.internal("fonts/TitleFont.fnt"));
@@ -52,14 +55,29 @@ public class Pause {
 				(float)(((Gdx.graphics.getHeight() / 2) - instructions2Layout.height / 2) - 48)
 				);
 		
+		this.redoScoreLayout();
+		
 	}
 	
+	private void redoScoreLayout() {
+		String scoreText = "Current Score: $" + String.format("%07d", this.score);
+		scoreLayout = new GlyphLayout(smallFont, scoreText, Color.GREEN, scoreText.length(), Align.left, false);
+		scorePositioning = new Vector2(
+				(Gdx.graphics.getWidth()/2) - scoreLayout.width /2,
+				scoreLayout.height
+				);
+		
+	}
+
 	public boolean isPaused() {
 		return paused;
 	}
 	
-	public void pause() {
+	public void pause(int score) {
 		this.paused = true;
+		this.score = score;
+		this.redoScoreLayout();
+		
 	}
 	
 	public void input(PlayScreen playScreen) {
@@ -84,6 +102,7 @@ public class Pause {
 		bigFont.draw(batch, pausedLayout, pausedPositioning.x, pausedPositioning.y);
 		smallFont.draw(batch, instructions1Layout, instructions1Positioning.x, instructions1Positioning.y);
 		smallFont.draw(batch, instructions2Layout, instructions2Positioning.x, instructions2Positioning.y);
+		smallFont.draw(batch, scoreLayout, scorePositioning.x, scorePositioning.y);
 		batch.end();
 	}
 }

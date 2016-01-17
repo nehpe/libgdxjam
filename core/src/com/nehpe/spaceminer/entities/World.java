@@ -8,6 +8,7 @@ import com.nehpe.spaceminer.entities.ai.AIInformation;
 import com.nehpe.spaceminer.levels.Level;
 import com.nehpe.spaceminer.objects.BaseObject;
 import com.nehpe.spaceminer.objects.Portal;
+import com.nehpe.spaceminer.objects.Table;
 import com.nehpe.spaceminer.physics.Collidable;
 import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.spaceminer.pickups.Pickup;
@@ -17,12 +18,12 @@ public class World {
 	ArrayList<Pickup> pickups;
 	ArrayList<Projectile> projectiles;
 	ArrayList<EnemyProjectile> enemyProjectiles;
+	ArrayList<Portal> portals;
 	ArrayList<BaseEnemy> enemies;
 	ArrayList<BaseObject> objects;
 	int[][] collidables;
 	int collidables_w;
 	int collidables_h;
-	Portal portal;
 
 	public World() {
 		level = new Level();
@@ -31,7 +32,7 @@ public class World {
 		enemyProjectiles = new ArrayList<EnemyProjectile>();
 		enemies = new ArrayList<BaseEnemy>();
 		objects = new ArrayList<BaseObject>();
-		portal = new Portal(new Vector2(16*25, 16*2));
+		portals = new ArrayList<Portal>();
 		this.initial_setup();
 	}
 
@@ -39,12 +40,39 @@ public class World {
 		collidables = level.getCollidables();
 		collidables_w = collidables.length;
 		collidables_h = collidables[0].length;
+		
+		// Set up tables
+		int[][] tablePositions = level.getTables();
+		for (int x = 0; x < tablePositions.length; x++) {
+			for (int y = 0; y < tablePositions[x].length; y++) {
+				if (tablePositions[x][y] == 1) {
+					this.addObject(new Table(new Vector2(x*16, y*16)));
+				}
+			}
+		}
+		// Set up portals
+		int[][] portalPositions = level.getPortals();
+		for (int x = 0; x < portalPositions.length; x++) {
+			for (int y = 0; y < portalPositions[x].length; y++) {
+				if (portalPositions[x][y] == 1) {
+					this.addPortal(new Portal(new Vector2(x*16, y*16)));
+				}
+			}
+		}
 	}
 	
 	public Vector2 getMapDimensions() {
 		return new Vector2(collidables_w, collidables_h);
 	}
 
+	public void addPortal(Portal portal) {
+		portals.add(portal);
+	}
+	
+	public void removePortal(Portal portal) {
+		portals.remove(portal);
+	}
+	
 	public void addProjectile(Projectile projectile) {
 		projectiles.add(projectile);
 	}
@@ -89,8 +117,11 @@ public class World {
 			o.draw(batch);
 		}
 		
-		portal.draw(batch);
-
+		// Draw portals
+		for (Portal p : portals) {
+			p.draw(batch);
+		}
+		
 		// Draw pickups
 		for (Pickup p : pickups) {
 			p.draw(batch);
@@ -128,8 +159,10 @@ public class World {
 		for (BaseObject o : objects) {
 			o.tick();
 		}
-		portal.tick(this);
-
+		// Tick portals
+		for (Portal p : portals) {
+			p.tick(this);
+		}
 		this.checkNonPlayerCollisions(player);
 	}
 

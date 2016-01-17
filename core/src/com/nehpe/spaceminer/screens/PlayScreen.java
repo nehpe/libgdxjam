@@ -11,8 +11,6 @@ import com.nehpe.spaceminer.entities.Enemy;
 import com.nehpe.spaceminer.entities.Player;
 import com.nehpe.spaceminer.entities.Projectile;
 import com.nehpe.spaceminer.entities.World;
-import com.nehpe.spaceminer.objects.Portal;
-import com.nehpe.spaceminer.objects.Table;
 import com.nehpe.spaceminer.physics.Collidable;
 import com.nehpe.spaceminer.physics.Wall;
 import com.nehpe.utils.HUD;
@@ -34,8 +32,8 @@ public class PlayScreen extends Screen {
 	Vector2 currentMovement;
 	World world;
 	HUD hud;
-//	int targetScore = 10000;
-	int targetScore = 100;
+	int targetScore = 10000;
+//	int targetScore = 100;
 	boolean gameWon = false;
 
 	public PlayScreen(SpaceMinerGame game) {
@@ -70,33 +68,8 @@ public class PlayScreen extends Screen {
 
 		// Add items
 		world.addEnemy(new BlobEnemy(new Vector2(16 * 4, 16 * 4)));
-		world.addEnemy(new BlobEnemy(new Vector2(16 * 5, 16 * 5)));
-		world.addEnemy(new BlobEnemy(new Vector2(16 * 10, 16 * 6)));
-		world.addEnemy(new BlobEnemy(new Vector2(16 * 12, 16 * 2)));
-		world.addEnemy(new BlobEnemy(new Vector2(16 * 2, 16 * 4)));
-
-		world.addObject(new Table(new Vector2(16 * 10, 16 * 10)));
-		world.addObject(new Table(new Vector2(16 * 10, 16 * 16)));
-		world.addObject(new Table(new Vector2(16 * 16, 16 * 16)));
-		world.addObject(new Table(new Vector2(16 * 16, 16 * 10)));
-
-		world.addObject(new Table(new Vector2(16 * 13, 16 * 7)));
-		world.addObject(new Table(new Vector2(16 * 7, 16 * 13)));
-		world.addObject(new Table(new Vector2(16 * 13, 16 * 13)));
-		world.addObject(new Table(new Vector2(16 * 7, 16 * 7)));
-
-		world.addObject(new Table(new Vector2(16 * 2, 16 * 2)));
-		world.addObject(new Table(new Vector2(16 * 2, 16 * 5)));
-		world.addObject(new Table(new Vector2(16 * 5, 16 * 5)));
-		world.addObject(new Table(new Vector2(16 * 5, 16 * 2)));
-
-		world.addObject(new Table(new Vector2(16 * 10, 16 * 10)));
-		world.addObject(new Table(new Vector2(16 * 10, 16 * 20)));
-		world.addObject(new Table(new Vector2(16 * 20, 16 * 20)));
-		world.addObject(new Table(new Vector2(16 * 20, 16 * 10)));
 
 		hud = new HUD();
-
 	}
 
 	public OrthographicCamera getCamera() {
@@ -140,7 +113,7 @@ public class PlayScreen extends Screen {
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-			pause.pause();
+			pause.pause(player.getScore());
 		}
 
 		if (player.dead() && Gdx.input.isKeyJustPressed(Keys.R)) {

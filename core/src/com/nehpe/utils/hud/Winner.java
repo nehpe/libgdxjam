@@ -23,6 +23,13 @@ public class Winner {
 	SpriteBatch batch;
 	boolean won = false;
 
+	GlyphLayout instructions1Layout;
+	GlyphLayout instructions2Layout;
+	Vector2 instructions1Positioning;
+	Vector2 instructions2Positioning;
+	String instructions1 = "Press Q to Quit";
+	String instructions2 = "Press R to Restart";
+
 	public Winner() {
 		shape = new ShapeRenderer();
 		batch = new SpriteBatch();
@@ -34,7 +41,19 @@ public class Winner {
 		// Centered
 		winPosition = new Vector2((Gdx.graphics.getWidth() / 2)
 				- (winLayout.width / 2), (Gdx.graphics.getHeight() / 2)
-				- (winLayout.height / 2));		
+				- (winLayout.height / 2));
+		
+		instructions1Layout = new GlyphLayout(smallFont, instructions1, Color.BLACK, instructions1.length(), Align.left, false);
+		instructions1Positioning = new Vector2(
+				(Gdx.graphics.getWidth() / 2) - instructions1Layout.width / 2,
+				(float)(((Gdx.graphics.getHeight() / 2) - instructions1Layout.height / 2) - 24)
+				);
+		
+		instructions2Layout = new GlyphLayout(smallFont, instructions2, Color.BLACK, instructions2.length(), Align.left, false);
+		instructions2Positioning = new Vector2(
+				(Gdx.graphics.getWidth() / 2) - instructions2Layout.width / 2,
+				(float)(((Gdx.graphics.getHeight() / 2) - instructions2Layout.height / 2) - 48)
+				);
 	}
 	
 	public void win() {
@@ -53,6 +72,8 @@ public class Winner {
 		
 		batch.begin();
 		largeFont.draw(batch, winLayout, winPosition.x, winPosition.y);
+		smallFont.draw(batch, instructions1Layout, instructions1Positioning.x, instructions1Positioning.y);
+		smallFont.draw(batch, instructions2Layout, instructions2Positioning.x, instructions2Positioning.y);
 		batch.end();
 	}
 	

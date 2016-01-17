@@ -24,7 +24,7 @@ public class Portal {
 
 	public void tick(World world) {
 		timer += Gdx.graphics.getDeltaTime();
-		if (timer > 5f) {
+		if (timer > 10f) {
 			world.addEnemy(new BlobEnemy(this.position.cpy()));
 			timer = 0f;
 		}

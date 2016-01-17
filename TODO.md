@@ -1,19 +1,18 @@
 # TODOS
 
-## Probably
-
-* ******- vvv Nice Stuff Down Here vvv -******
-- Finish level layout
-	- Additional portals
-	- Additional tables
 - Instructions on WIN screen
+- Add score on win screen
 - Add score to death screen
 - More Blob animations
+- Additional bullet weapon
 - Additional Enemy type
 - Melee Weapon(s)
-- Additional bullet weapon
 
 ## DONE
+- ~~~Add score to pause screen~~~
+- ~~~Finish level layout~~~ 
+	- ~~~Additional portals~~~
+	- ~~~Additional tables~~~
 - ~~~Main Menu~~~
 - ~~~Pause screen~~~
 - ~~~Blob shoot sound~~~
